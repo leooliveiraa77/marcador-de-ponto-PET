@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Condensed&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.nav-bar {
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'roboto condensed';
+}
+
+.nav-bar a {
+  text-decoration: none;
+  color: white;
+  padding-left: 20px;
+}
+
+.nav-btn {
+  margin-right: 5px;
+}
+
+.link-btn {
+  scroll-behavior: smooth;
+}
+
+.link-btn:hover {
+  color: rgb(160, 17, 17);
+}
+
+.home-section {
+  background-image: linear-gradient(black, gray);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'roboto';
+}
+
+.register {
+  margin: 0;
+  background-color: gray;
+  height: 100vh;
+  font-family: 'roboto condensed';
+}
+
+.register h1 {
+  margin: 0;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#register-section {
+  margin-top: 50px;
+  width: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#visor {
+  color: rgb(255, 255, 255);
+  text-shadow: 0px 1px rgb(56, 52, 52);
+  font-size: 100px;
+}
+
+#start-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+  width: 200px;
+  height: 40px;
+  font-size: 30px;
+}
+
+#start-btn:hover {
+  color: white;
+  background-color: rgb(22, 184, 39);
+  transition: all 0.2s ease-in;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  width: 350px;
+  height: 50px;
+  margin-top: 110px;
+  color: white;
+  font-size: 20px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.088), rgba(128, 128, 128, 0.133));
+}
+
+.visible {
+  display: none;
+}
+#user-modal input {
+  background: transparent;
+  border-radius: 15px;
+}
+
+#user-modal button {
+  background-color: rgb(0, 0, 0);
+  color: white;
+  border-radius: 5px;
+  font-family: 'roboto';
+}
+
+.login-info {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.logout-btn {
+  background-color: rgb(0, 0, 0);
+  color: white;
+  border-radius: 5px;
+  font-family: 'roboto';
+}
+
+.logout-btn:hover {
+  color: white;
+  background-color: rgb(160, 17, 17);
+  transition: all 0.2s ease-in;
+}
+
+.historic-info:hover {
+  background-color: rgba(0, 0, 0, 0.487);
+}
+
+.title-page {
+  font-size: 50px;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PET - Marcador de Ponto</title>
+    <script src="./app.js" defer></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="nav-bar">
+      <p>PET EDU UFV</p>
+      <div class="nav-btn">
+        <a href="#" class="link-btn">Início</a>
+        <a href="#register-point" class="link-btn">Registro</a>
+        <a href="#historic-point" class="link-btn">Histórico</a>
+      </div>
+    </header>
+    <section class="home-section">
+      <div>
+        <h1 id="visor"></h1>
+      </div>
+      <div>
+        <button id="start-btn"><strong>ENTRAR</strong></button>
+      </div>
+      <div id="user-modal" class="modal visible">
+        <label for="name">Nome:</label>
+        <input type="text" name="name" id="name-input" />
+        <button id="login-btn">Entrar</button>
+      </div>
+    </section>
+    <section class="register">
+      <header>
+        <h1 id="register-point" class="title-page">REGISTRO</h1>
+      </header>
+      <ol id="register-section"></ol>
+    </section>
+    <section class="register">
+      <header>
+        <h1 id="historic-point" class="title-page">HISTÓRICO</h1>
+      </header>
+      <ol id="historic-section"></ol>
+    </section>
+  </body>
+</html>
