@@ -7,6 +7,7 @@ const registerSectionElement = document.getElementById('register-section');
 const historicSectionElement = document.getElementById('historic-section');
 
 let showTime;
+let dateRegister;
 let idNumber = 0;
 const dataFromUser = [];
 
@@ -25,9 +26,19 @@ const timeApp = () => {
   let minutes = momentoatual.getMinutes();
   let seconds = momentoatual.getSeconds();
 
+  let dayNow = momentoatual.getDate();
+  let monthNow = momentoatual.getMonth() + 1;
+  let yearNow = momentoatual.getFullYear();
+
   let strHours = new String(hours);
   let strMinutes = new String(minutes);
   let strSeconds = new String(seconds);
+
+  let strDay = new String(dayNow);
+  let strMonth = new String(monthNow);
+  let strYear = new String(yearNow);
+
+  dateRegister = `${fixingTwoDigits(strDay)}-${fixingTwoDigits(strMonth)}-${strYear}`;
 
   showTime = `${fixingTwoDigits(strHours)}:${fixingTwoDigits(strMinutes)}:${fixingTwoDigits(strSeconds)}`;
   visor.innerHTML = showTime;
@@ -42,15 +53,16 @@ const startHandler = () => {
 
 const loginHandler = () => {
   const usernameInput = userInputs.value;
+  console.log(isNaN(usernameInput));
 
-  if (!usernameInput || typeof usernameInput !== 'string' || usernameInput.length < 5) {
+  if (!usernameInput || !isNaN(usernameInput) || usernameInput.length < 5) {
     return alert`Entrada invalida`;
   }
 
   const newEntry = {
     id: idNumber,
     name: usernameInput,
-    timeLogin: showTime,
+    timeLogin: `Data: ${dateRegister}. Horário de entrada: ${showTime}. `,
     timeLogout: undefined,
   };
 
@@ -90,7 +102,7 @@ const logoutHandler = (id) => {
 const renderRegisterElements = (name, login, id) => {
   const paragraphElement = document.createElement('li');
   paragraphElement.className = `login-info btn-${id}`;
-  paragraphElement.innerHTML = `${name}, horário de entrada: ${login} <button id="btn-${id}" class="logout-btn">Sair</button>`;
+  paragraphElement.innerHTML = `${name}, ${login} <button id="btn-${id}" class="logout-btn">Sair</button>`;
   registerSectionElement.append(paragraphElement);
 
   const logoutBtn = document.querySelector(`#btn-${id}`);
@@ -101,7 +113,7 @@ const renderRegisterElements = (name, login, id) => {
 const renderHistoricElements = (name, login, logout) => {
   const liElement = document.createElement('li');
   liElement.className = 'login-info historic-info';
-  liElement.innerHTML = `${name}. Entrada: ${login}. Saída: ${logout}`;
+  liElement.innerHTML = `${name}. ${login} Saída: ${logout}`;
   historicSectionElement.append(liElement);
 };
 
