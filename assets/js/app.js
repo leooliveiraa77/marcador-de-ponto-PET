@@ -53,7 +53,6 @@ const startHandler = () => {
 
 const loginHandler = () => {
   const usernameInput = userInputs.value;
-  console.log(isNaN(usernameInput));
 
   if (!usernameInput || !isNaN(usernameInput) || usernameInput.length < 5) {
     return alert`Entrada invalida`;
@@ -62,17 +61,17 @@ const loginHandler = () => {
   const newEntry = {
     id: idNumber,
     name: usernameInput,
-    timeLogin: `Data: ${dateRegister}. Horário de entrada: ${showTime}. `,
+    timeLogin: showTime,
     timeLogout: undefined,
+    date: dateRegister,
   };
 
   idNumber++;
 
   dataFromUser.push(newEntry);
   clearMovieInput();
-  renderRegisterElements(newEntry.name, newEntry.timeLogin, newEntry.id);
+  renderRegisterElements(newEntry.name, newEntry.timeLogin, newEntry.date, newEntry.id);
   //startHandler(); // caso eu queira esconder o modal depois de cada login.
-  console.log(dataFromUser);
 };
 
 const clearMovieInput = () => {
@@ -88,21 +87,16 @@ const logoutHandler = (id) => {
     logIndex++;
   }
   dataFromUser[id].timeLogout = showTime;
-  console.log('id:', id);
   registerSectionElement.querySelector(`.btn-${id}`).remove();
-  console.log(dataFromUser);
 
-  let historicName = dataFromUser[id].name;
-  let historiclogin = dataFromUser[id].timeLogin;
-  let historiclogout = dataFromUser[id].timeLogout;
-
-  renderHistoricElements(historicName, historiclogin, historiclogout);
+  renderHistoricElements(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].date, dataFromUser[id].timeLogout);
+  exportDataSheet(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].timeLogout, dataFromUser[id].date);
 };
 
-const renderRegisterElements = (name, login, id) => {
+const renderRegisterElements = (name, login, date, id) => {
   const paragraphElement = document.createElement('li');
   paragraphElement.className = `login-info btn-${id}`;
-  paragraphElement.innerHTML = `${name}, ${login} <button id="btn-${id}" class="logout-btn">Sair</button>`;
+  paragraphElement.innerHTML = `${name}. Data: ${date}. Horário de entrada: ${login} <button id="btn-${id}" class="logout-btn">Sair</button>`;
   registerSectionElement.append(paragraphElement);
 
   const logoutBtn = document.querySelector(`#btn-${id}`);
@@ -110,12 +104,38 @@ const renderRegisterElements = (name, login, id) => {
   logoutBtn.addEventListener('click', logoutHandler.bind(null, id));
 };
 
-const renderHistoricElements = (name, login, logout) => {
+const renderHistoricElements = (name, login, date, logout) => {
   const liElement = document.createElement('li');
   liElement.className = 'login-info historic-info';
-  liElement.innerHTML = `${name}. ${login} Saída: ${logout}`;
+  liElement.innerHTML = `${name}. Data: ${date}. Horário de entrada: ${login}. Saída: ${logout}`;
   historicSectionElement.append(liElement);
 };
 
 startBtn.addEventListener('click', startHandler);
 loginBtn.addEventListener('click', loginHandler);
+
+//Função que envia os dados para a planilha. Ainda não consegui separar os arquivos por meio
+//do import e export, pois ao faze-lo, a função timeApp não funciona mais
+const exportDataSheet = (name, login, logout, date) => {
+  axios
+    .post(
+      'https://sheetdb.io/api/v1/7x5t54ile9k99',
+      {
+        data: {
+          name: name,
+          login: login,
+          logout: logout,
+          date: date,
+        },
+      },
+      {
+        auth: {
+          username: 'z3sdpklb',
+          password: '53bhuo9kqmksvd2vjsdv',
+        },
+      }
+    )
+    .then((response) => {
+      console.log(response.data);
+    });
+};
