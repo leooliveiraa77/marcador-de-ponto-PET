@@ -6,6 +6,8 @@ const userInputs = document.getElementById('name-input');
 const registerSectionElement = document.getElementById('register-section');
 const historicSectionElement = document.getElementById('historic-section');
 
+const justificationBtn = document.getElementById('justification-btn');
+
 let showTime;
 let dateRegister;
 let idNumber = 0;
@@ -111,8 +113,12 @@ const renderHistoricElements = (name, login, date, logout) => {
   historicSectionElement.append(liElement);
 };
 
+const justificationModal = () => {};
+
 startBtn.addEventListener('click', startHandler);
 loginBtn.addEventListener('click', loginHandler);
+
+justificationBtn.addEventListener('click', justificationModal);
 
 //Função que envia os dados para a planilha. Ainda não consegui separar os arquivos por meio
 //do import e export, pois ao faze-lo, a função timeApp não funciona mais
