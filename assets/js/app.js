@@ -7,11 +7,14 @@ const registerSectionElement = document.getElementById('register-section');
 const historicSectionElement = document.getElementById('historic-section');
 
 const justificationBtn = document.getElementById('justification-btn');
+const modalJustification = document.getElementById('add-modal');
 
 let showTime;
 let dateRegister;
 let idNumber = 0;
 const dataFromUser = [];
+let deleteId; // para passar o id quando tiver erro
+let statusApp = true; // para evitar dados duplicados
 
 const fixingTwoDigits = (digit) => {
   if (digit < 10) {
@@ -81,18 +84,23 @@ const clearMovieInput = () => {
 };
 
 const logoutHandler = (id) => {
-  let logIndex = 0;
-  for (const log of dataFromUser) {
-    if (log.id === id) {
-      break;
+  if (statusApp) {
+    let logIndex = 0;
+    for (const log of dataFromUser) {
+      if (log.id === id) {
+        break;
+      }
+      logIndex++;
     }
-    logIndex++;
-  }
-  dataFromUser[id].timeLogout = showTime;
-  registerSectionElement.querySelector(`.btn-${id}`).remove();
+    dataFromUser[id].timeLogout = showTime;
 
-  renderHistoricElements(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].date, dataFromUser[id].timeLogout);
-  exportDataSheet(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].timeLogout, dataFromUser[id].date);
+    renderHistoricElements(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].date, dataFromUser[id].timeLogout);
+    exportDataSheet(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].timeLogout, dataFromUser[id].date);
+    deleteId = id;
+  }
+  statusApp = false;
+
+  //registerSectionElement.querySelector(`.btn-${id}`).remove(); // como parar a função?
 };
 
 const renderRegisterElements = (name, login, date, id) => {
@@ -113,12 +121,18 @@ const renderHistoricElements = (name, login, date, logout) => {
   historicSectionElement.append(liElement);
 };
 
-const justificationModal = () => {};
+const justificationModal = () => {
+  modalJustification.classList.add('visible');
+};
 
 startBtn.addEventListener('click', startHandler);
 loginBtn.addEventListener('click', loginHandler);
 
 justificationBtn.addEventListener('click', justificationModal);
+
+const deleteHandlerLeo = (id) => {
+  registerSectionElement.querySelector(`.btn-${id}`).remove();
+};
 
 //Função que envia os dados para a planilha. Ainda não consegui separar os arquivos por meio
 //do import e export, pois ao faze-lo, a função timeApp não funciona mais
@@ -142,6 +156,32 @@ const exportDataSheet = (name, login, logout, date) => {
       }
     )
     .then((response) => {
-      console.log(response.data);
+      console.log(response.status);
+      if (response.status === 201) {
+        alert('Registrado com sucesso. Até a próxima PETIANO');
+        deleteHandlerLeo(deleteId);
+        statusApp = true;
+      } else {
+        alert('Erro ' + response.status);
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log('1' + error.response.data);
+        console.log('2' + error.response.status);
+        console.log('3' + error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log('4' + error.request);
+        alert('Erro: ' + error + ' \n Provavelmente sem conexão com internet :(');
+        statusApp = true;
+      } else {
+        console.log('Erro: ' + error.message);
+      }
+      //console.log('5' + error.config);
     });
 };

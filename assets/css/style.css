@@ -147,9 +147,7 @@ body {
   font-size: 50px;
 }
 
-/* Modal 
-
-.modal {
+.modal-justification {
   position: fixed;
   z-index: 100;
   background: white;
@@ -158,8 +156,13 @@ body {
   top: 30vh;
   left: 10%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  display: flex;
+  display: none;
 }
+.modal-justification.visible {
+  display: block;
+  animation: fade-slide-in 0.3 ease-out forwards;
+}
+/* 
 .modal__content {
   display: flex;
   flex-direction: column;
