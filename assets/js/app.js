@@ -9,6 +9,8 @@ const historicSectionElement = document.getElementById('historic-section');
 const justificationBtn = document.getElementById('justification-btn');
 const modalJustification = document.getElementById('add-modal');
 
+const queMerda = new Date().toISOString().substr(0, 19); // data completa
+
 let showTime;
 let dateRegister;
 let idNumber = 0;
@@ -50,7 +52,7 @@ const timeApp = () => {
   setTimeout('timeApp()', 1000);
 };
 
-timeApp();
+//aqui estava init
 
 const startHandler = () => {
   modalUser.classList.toggle('visible');
@@ -74,12 +76,12 @@ const loginHandler = () => {
   idNumber++;
 
   dataFromUser.push(newEntry);
-  clearMovieInput();
+  clearEntryInput();
   renderRegisterElements(newEntry.name, newEntry.timeLogin, newEntry.date, newEntry.id);
   //startHandler(); // caso eu queira esconder o modal depois de cada login.
 };
 
-const clearMovieInput = () => {
+const clearEntryInput = () => {
   userInputs.value = '';
 };
 
@@ -93,6 +95,15 @@ const logoutHandler = (id) => {
       logIndex++;
     }
     dataFromUser[id].timeLogout = showTime;
+
+    const userData = {
+      name: dataFromUser[id].name,
+      timeLogin: dataFromUser[id].timeLogin,
+      date: dataFromUser[id].date,
+      timeLogout: dataFromUser[id].timeLogout,
+    };
+
+    localDataHandler(id, userData);
 
     renderHistoricElements(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].date, dataFromUser[id].timeLogout);
     exportDataSheet(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].timeLogout, dataFromUser[id].date);
@@ -130,7 +141,7 @@ loginBtn.addEventListener('click', loginHandler);
 
 justificationBtn.addEventListener('click', justificationModal);
 
-const deleteHandlerLeo = (id) => {
+const deleteElHandler = (id) => {
   registerSectionElement.querySelector(`.btn-${id}`).remove();
 };
 
@@ -159,7 +170,7 @@ const exportDataSheet = (name, login, logout, date) => {
       console.log(response.status);
       if (response.status === 201) {
         alert('Registrado com sucesso. Até a próxima PETIANO');
-        deleteHandlerLeo(deleteId);
+        deleteElHandler(deleteId);
         statusApp = true;
       } else {
         alert('Erro ' + response.status);
@@ -182,6 +193,36 @@ const exportDataSheet = (name, login, logout, date) => {
       } else {
         console.log('Erro: ' + error.message);
       }
-      //console.log('5' + error.config);
     });
 };
+
+const localDataHandler = (id, userData) => {
+  if (localStorage.length > 2) {
+    console.log(localStorage.key(0));
+    localStorage.removeItem(localStorage.key(0));
+    loadUI();
+    localStorage.setItem(`${id}`, JSON.stringify(userData));
+  } else {
+    localStorage.setItem(`${id}`, JSON.stringify(userData));
+  }
+};
+
+const loadUI = () => {
+  const haveData = localStorage.length;
+  if (haveData > 0) {
+    for (let i = 0; i < localStorage.length; i++) {
+      let key = localStorage.key(i);
+      let getPersonData = localStorage.getItem(key);
+      let personObject = JSON.parse(getPersonData);
+
+      renderHistoricElements(personObject.name, personObject.timeLogin, personObject.date, personObject.timeLogout);
+    }
+  }
+};
+
+const init = () => {
+  timeApp();
+  loadUI();
+};
+
+init();
