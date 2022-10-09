@@ -9,13 +9,11 @@ const historicSectionElement = document.getElementById('historic-section');
 const justificationBtn = document.getElementById('justification-btn');
 const modalJustification = document.getElementById('add-modal');
 
-const queMerda = new Date().toISOString().substr(0, 19); // data completa
-
+const dataFromUser = [];
 let showTime;
 let dateRegister;
 let idNumber = 0;
-const dataFromUser = [];
-let deleteId; // para passar o id quando tiver erro
+let deleteId; // para passar o id quando tiver erro na calback
 let statusApp = true; // para evitar dados duplicados
 
 const fixingTwoDigits = (digit) => {
@@ -49,10 +47,8 @@ const timeApp = () => {
 
   showTime = `${fixingTwoDigits(strHours)}:${fixingTwoDigits(strMinutes)}:${fixingTwoDigits(strSeconds)}`;
   visor.innerHTML = showTime;
-  setTimeout('timeApp()', 1000);
+  setInterval('timeApp()', 1000);
 };
-
-//aqui estava init
 
 const startHandler = () => {
   modalUser.classList.toggle('visible');
@@ -73,8 +69,8 @@ const loginHandler = () => {
     date: dateRegister,
   };
 
-  idNumber++;
-
+  idNumber++; // como lidar com id caso o valor da variável reinicie mas o valor local storage não
+  //vou salvar o id no cache também
   dataFromUser.push(newEntry);
   clearEntryInput();
   renderRegisterElements(newEntry.name, newEntry.timeLogin, newEntry.date, newEntry.id);
@@ -87,13 +83,6 @@ const clearEntryInput = () => {
 
 const logoutHandler = (id) => {
   if (statusApp) {
-    let logIndex = 0;
-    for (const log of dataFromUser) {
-      if (log.id === id) {
-        break;
-      }
-      logIndex++;
-    }
     dataFromUser[id].timeLogout = showTime;
 
     const userData = {
@@ -126,6 +115,14 @@ const renderRegisterElements = (name, login, date, id) => {
 };
 
 const renderHistoricElements = (name, login, date, logout) => {
+  const numberElHistoric = historicSectionElement.childNodes.length;
+  if (numberElHistoric > 2) {
+    let lastId = 0;
+    console.log(historicSectionElement.lastChild);
+    historicSectionElement.firstChild.remove();
+    localStorage.removeItem(localStorage.key(lastId)); // aqui
+    lastId++;
+  }
   const liElement = document.createElement('li');
   liElement.className = 'login-info historic-info';
   liElement.innerHTML = `${name}. Data: ${date}. Horário de entrada: ${login}. Saída: ${logout}`;
@@ -135,11 +132,6 @@ const renderHistoricElements = (name, login, date, logout) => {
 const justificationModal = () => {
   modalJustification.classList.add('visible');
 };
-
-startBtn.addEventListener('click', startHandler);
-loginBtn.addEventListener('click', loginHandler);
-
-justificationBtn.addEventListener('click', justificationModal);
 
 const deleteElHandler = (id) => {
   registerSectionElement.querySelector(`.btn-${id}`).remove();
@@ -197,10 +189,8 @@ const exportDataSheet = (name, login, logout, date) => {
 };
 
 const localDataHandler = (id, userData) => {
+  //melhor salvar um unico objeto de objetos
   if (localStorage.length > 2) {
-    console.log(localStorage.key(0));
-    localStorage.removeItem(localStorage.key(0));
-    loadUI();
     localStorage.setItem(`${id}`, JSON.stringify(userData));
   } else {
     localStorage.setItem(`${id}`, JSON.stringify(userData));
@@ -224,5 +214,10 @@ const init = () => {
   timeApp();
   loadUI();
 };
+
+startBtn.addEventListener('click', startHandler);
+loginBtn.addEventListener('click', loginHandler);
+
+justificationBtn.addEventListener('click', justificationModal);
 
 init();
