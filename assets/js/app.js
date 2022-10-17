@@ -1,3 +1,5 @@
+import { exportDataSheet } from '../backend/server.js';
+
 const visor = document.getElementById('visor');
 const startBtn = document.getElementById('start-btn');
 const modalUser = document.querySelector('#user-modal');
@@ -13,8 +15,8 @@ const dataFromUser = [];
 let showTime;
 let dateRegister;
 let idNumber = 0;
-let deleteId; // para passar o id quando tiver erro na calback
-let statusApp = true; // para evitar dados duplicados
+export let statusApp = true; // para evitar dados duplicados
+export let deleteId; // para passar o id quando tiver erro na calback
 
 const fixingTwoDigits = (digit) => {
   if (digit < 10) {
@@ -24,7 +26,7 @@ const fixingTwoDigits = (digit) => {
   }
 };
 
-const timeApp = () => {
+function timeApp() {
   let momentoatual = new Date();
 
   let hours = momentoatual.getHours();
@@ -47,8 +49,7 @@ const timeApp = () => {
 
   showTime = `${fixingTwoDigits(strHours)}:${fixingTwoDigits(strMinutes)}:${fixingTwoDigits(strSeconds)}`;
   visor.innerHTML = showTime;
-  setInterval('timeApp()', 1000);
-};
+}
 
 const startHandler = () => {
   modalUser.classList.toggle('visible');
@@ -133,59 +134,8 @@ const justificationModal = () => {
   modalJustification.classList.add('visible');
 };
 
-const deleteElHandler = (id) => {
+export const deleteElHandler = (id) => {
   registerSectionElement.querySelector(`.btn-${id}`).remove();
-};
-
-//Função que envia os dados para a planilha. Ainda não consegui separar os arquivos por meio
-//do import e export, pois ao faze-lo, a função timeApp não funciona mais
-const exportDataSheet = (name, login, logout, date) => {
-  axios
-    .post(
-      'https://sheetdb.io/api/v1/7x5t54ile9k99',
-      {
-        data: {
-          name: name,
-          login: login,
-          logout: logout,
-          date: date,
-        },
-      },
-      {
-        auth: {
-          username: 'z3sdpklb',
-          password: '53bhuo9kqmksvd2vjsdv',
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response.status);
-      if (response.status === 201) {
-        alert('Registrado com sucesso. Até a próxima PETIANO');
-        deleteElHandler(deleteId);
-        statusApp = true;
-      } else {
-        alert('Erro ' + response.status);
-      }
-    })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log('1' + error.response.data);
-        console.log('2' + error.response.status);
-        console.log('3' + error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log('4' + error.request);
-        alert('Erro: ' + error + ' \n Provavelmente sem conexão com internet :(');
-        statusApp = true;
-      } else {
-        console.log('Erro: ' + error.message);
-      }
-    });
 };
 
 const localDataHandler = (id, userData) => {
@@ -211,7 +161,7 @@ const loadUI = () => {
 };
 
 const init = () => {
-  timeApp();
+  setInterval(timeApp, 1000);
   loadUI();
 };
 
@@ -219,5 +169,10 @@ startBtn.addEventListener('click', startHandler);
 loginBtn.addEventListener('click', loginHandler);
 
 justificationBtn.addEventListener('click', justificationModal);
+
+export const statusHandler = () => {
+  // função para evitar dois clicks e inforamções duplicadas
+  statusApp = true;
+};
 
 init();
