@@ -11,7 +11,8 @@ const historicSectionElement = document.getElementById('historic-section');
 const justificationBtn = document.getElementById('justification-btn');
 const modalJustification = document.getElementById('add-modal');
 
-const dataFromUser = [];
+let dataFromUser = [];
+const dataFromUserLogout = [];
 let showTime;
 let dateRegister;
 let idNumber = 0;
@@ -69,34 +70,37 @@ const loginHandler = () => {
     timeLogout: undefined,
     date: dateRegister,
   };
-
-  idNumber++; // como lidar com id caso o valor da variável reinicie mas o valor local storage não
-  //vou salvar o id no cache também
+  idNumber++; // posso retirar o ID
   dataFromUser.push(newEntry);
+  localDataHandler('myLogin', dataFromUser);
+
   clearEntryInput();
   renderRegisterElements(newEntry.name, newEntry.timeLogin, newEntry.date, newEntry.id);
   //startHandler(); // caso eu queira esconder o modal depois de cada login.
+  //subId: dataFromUser.indexOf(newEntry)
 };
 
 const clearEntryInput = () => {
   userInputs.value = '';
 };
 
-const logoutHandler = (id) => {
+const logoutHandler = (name, login, date, id) => {
   if (statusApp) {
-    dataFromUser[id].timeLogout = showTime;
+    //dataFromUser[id].timeLogout = showTime ? console.log('null showTime') : console.log('null showTime');
 
     const userData = {
-      name: dataFromUser[id].name,
-      timeLogin: dataFromUser[id].timeLogin,
-      date: dataFromUser[id].date,
-      timeLogout: dataFromUser[id].timeLogout,
+      name: name,
+      timeLogin: login,
+      date: date,
+      timeLogout: showTime,
     };
+    dataFromUserLogout.push(userData);
 
-    localDataHandler(id, userData);
+    localDataHandler('myHistory', dataFromUserLogout);
 
-    renderHistoricElements(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].date, dataFromUser[id].timeLogout);
-    exportDataSheet(dataFromUser[id].name, dataFromUser[id].timeLogin, dataFromUser[id].timeLogout, dataFromUser[id].date);
+    renderHistoricElements(userData.name, userData.timeLogin, userData.date, userData.timeLogout);
+    exportDataSheet(userData.name, userData.timeLogin, userData.timeLogout, userData.date);
+
     deleteId = id;
   }
   statusApp = false;
@@ -111,18 +115,13 @@ const renderRegisterElements = (name, login, date, id) => {
   registerSectionElement.append(paragraphElement);
 
   const logoutBtn = document.querySelector(`#btn-${id}`);
-
-  logoutBtn.addEventListener('click', logoutHandler.bind(null, id));
+  logoutBtn.addEventListener('click', logoutHandler.bind(null, name, login, date, id));
 };
 
 const renderHistoricElements = (name, login, date, logout) => {
   const numberElHistoric = historicSectionElement.childNodes.length;
-  if (numberElHistoric > 2) {
-    let lastId = 0;
-    console.log(historicSectionElement.lastChild);
+  if (numberElHistoric > 3) {
     historicSectionElement.firstChild.remove();
-    localStorage.removeItem(localStorage.key(lastId)); // aqui
-    lastId++;
   }
   const liElement = document.createElement('li');
   liElement.className = 'login-info historic-info';
@@ -138,41 +137,65 @@ export const deleteElHandler = (id) => {
   registerSectionElement.querySelector(`.btn-${id}`).remove();
 };
 
-const localDataHandler = (id, userData) => {
-  //melhor salvar um unico objeto de objetos
-  if (localStorage.length > 2) {
-    localStorage.setItem(`${id}`, JSON.stringify(userData));
-  } else {
-    localStorage.setItem(`${id}`, JSON.stringify(userData));
+const localDataHandler = (name, userData) => {
+  localStorage.setItem(`${name}`, JSON.stringify(userData));
+};
+
+const loadUI = (dataPackage) => {
+  let hasData = localStorage.getItem(dataPackage);
+  if (!hasData) {
+    console.log('working..');
+    return;
+  }
+
+  //const haveData = localStorage.length; deletar
+
+  if (dataPackage === 'myHistory') {
+    let getPersonData = localStorage.getItem(dataPackage);
+    let personObject = JSON.parse(getPersonData);
+    for (let i = 0; i < personObject.length; i++) {
+      renderHistoricElements(personObject[i].name, personObject[i].timeLogin, personObject[i].date, personObject[i].timeLogout);
+    }
+  } else if (dataPackage === 'myLogin') {
+    let getPersonData = localStorage.getItem(dataPackage);
+    let personObject = JSON.parse(getPersonData);
+    for (let i = 0; i < personObject.length; i++) {
+      renderRegisterElements(personObject[i].name, personObject[i].timeLogin, personObject[i].date, personObject[i].id);
+    }
   }
 };
 
-const loadUI = () => {
-  const haveData = localStorage.length;
-  if (haveData > 0) {
-    for (let i = 0; i < localStorage.length; i++) {
-      let key = localStorage.key(i);
-      let getPersonData = localStorage.getItem(key);
-      let personObject = JSON.parse(getPersonData);
+export const statusHandler = () => {
+  // função para evitar dois clicks e inforamções duplicadas
+  statusApp = true;
+};
 
-      renderHistoricElements(personObject.name, personObject.timeLogin, personObject.date, personObject.timeLogout);
+export const updateStorage = (name) => {
+  for (let i = 0; i < dataFromUser.length; i++) {
+    if (dataFromUser[i].name === name) {
+      console.log('executando - name: ' + name + ' element: ' + dataFromUser[i].name);
+      dataFromUser.splice(i, 1);
+      localDataHandler('myLogin', dataFromUser);
     }
   }
 };
 
 const init = () => {
   setInterval(timeApp, 1000);
-  loadUI();
+  const recoveryData = localStorage.getItem('myLogin');
+  const recoveryArray = JSON.parse(recoveryData);
+  dataFromUser = recoveryArray ? recoveryArray : new Array();
+  console.log(dataFromUser);
+  loadUI('myLogin');
+  loadUI('myHistory');
 };
+
+justificationBtn.addEventListener('click', () => {
+  //provisório
+  localStorage.clear();
+});
 
 startBtn.addEventListener('click', startHandler);
 loginBtn.addEventListener('click', loginHandler);
-
-justificationBtn.addEventListener('click', justificationModal);
-
-export const statusHandler = () => {
-  // função para evitar dois clicks e inforamções duplicadas
-  statusApp = true;
-};
 
 init();

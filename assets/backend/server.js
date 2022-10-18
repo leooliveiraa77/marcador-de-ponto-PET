@@ -1,4 +1,4 @@
-import { deleteElHandler, deleteId, statusHandler } from '../js/app.js';
+import { deleteElHandler, deleteId, statusHandler, updateStorage } from '../js/app.js';
 
 export const exportDataSheet = (name, login, logout, date) => {
   axios
@@ -24,6 +24,9 @@ export const exportDataSheet = (name, login, logout, date) => {
       if (response.status === 201) {
         alert('Registrado com sucesso. Até a próxima PETIANO');
         deleteElHandler(deleteId);
+
+        updateStorage(name);
+
         statusHandler();
       } else {
         alert('Erro ' + response.status);
@@ -44,6 +47,7 @@ export const exportDataSheet = (name, login, logout, date) => {
         alert('Erro: ' + error + ' \n Provavelmente sem conexão com internet :(');
         statusApp = true;
       } else {
+        statusHandler();
         console.log('Erro: ' + error.message);
       }
     });
