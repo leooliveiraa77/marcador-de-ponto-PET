@@ -24,9 +24,7 @@ export const exportDataSheet = (name, login, logout, date) => {
       if (response.status === 201) {
         alert('Registrado com sucesso. Até a próxima PETIANO');
         deleteElHandler(deleteId);
-
         updateStorage(name);
-
         statusHandler();
       } else {
         alert('Erro ' + response.status);

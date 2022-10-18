@@ -53,7 +53,7 @@ function timeApp() {
 }
 
 const startHandler = () => {
-  modalUser.classList.toggle('visible');
+  getUserLocation();
 };
 
 const loginHandler = () => {
@@ -202,4 +202,27 @@ justificationBtn.addEventListener('click', () => {
 startBtn.addEventListener('click', startHandler);
 loginBtn.addEventListener('click', loginHandler);
 
+const getUserLocation = () => {
+  let lat, lon;
+  navigator.geolocation.getCurrentPosition((position) => {
+    lat = position.coords.latitude;
+    lon = position.coords.longitude;
+    verifyingLocation(lat, lon);
+  });
+};
+
+const verifyingLocation = (lat, lon) => {
+  const latHome = -20.76;
+  const lonHome = -42.874;
+  //DPE loc verification = lat.toFixed(3) === -20.759 && lon.toFixed(3) === -42.869
+  //Posinho loc verification = lat.toFixed(3) === -20.76 && lon.toFixed(3) === -42.874
+
+  if (lat.toFixed(3) === latHome.toFixed(3) && lon.toFixed(3) === lonHome.toFixed(3)) {
+    modalUser.classList.toggle('visible');
+    return;
+  } else {
+    document.getElementById('backdrop').style.display = 'block';
+    alert('Você não está no DPE');
+  }
+};
 init();
