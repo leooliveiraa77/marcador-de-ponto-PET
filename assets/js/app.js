@@ -12,7 +12,7 @@ const justificationBtn = document.getElementById('justification-btn');
 const modalJustification = document.getElementById('add-modal');
 
 let dataFromUser = [];
-const dataFromUserLogout = [];
+let dataFromUserLogout = [];
 let showTime;
 let dateRegister;
 let idNumber = 0;
@@ -182,10 +182,14 @@ export const updateStorage = (name) => {
 
 const init = () => {
   setInterval(timeApp, 1000);
-  const recoveryData = localStorage.getItem('myLogin');
-  const recoveryArray = JSON.parse(recoveryData);
-  dataFromUser = recoveryArray ? recoveryArray : new Array();
-  console.log(dataFromUser);
+  const recoveryDataLogin = localStorage.getItem('myLogin');
+  const recoveryArrayLogin = JSON.parse(recoveryDataLogin);
+  dataFromUser = recoveryArrayLogin ? recoveryArrayLogin : new Array();
+
+  const recoveryDataHistoric = localStorage.getItem('myHistory');
+  const recoveryArrayHistoric = JSON.parse(recoveryDataHistoric);
+  dataFromUserLogout = recoveryArrayHistoric ? recoveryArrayHistoric : new Array();
+  console.log(dataFromUserLogout);
   loadUI('myLogin');
   loadUI('myHistory');
 };
